@@ -1,6 +1,6 @@
-package com.example.APIServer;
+package com.example.APIServer.controllers;
 
-import com.example.APIServer.domain.User;
+import com.example.APIServer.entities.UserEntity;
 import com.example.APIServer.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,27 +15,18 @@ public class GreetingController {
     @Autowired
     private UserRepository userRepo;
 
-    @GetMapping("/greeting")
-    public String greeting(
-            @RequestParam(name="name", required=false, defaultValue="World") String name,
-            Map<String, Object> model
-    ) {
-        model.put("name", name);
-        return "greeting";
-    }
-
     @GetMapping
     public String main(Map<String, Object> model) {
-        Iterable<User> users = userRepo.findAll();
+        Iterable<UserEntity> users = userRepo.findAll();
         model.put("users", users);
         return "main";
     }
 
     @PostMapping
     public String add(@RequestParam String name, @RequestParam String email, Map<String, Object> model) {
-        User user = new User(name, email);
+        UserEntity user = new UserEntity(name, email);
         userRepo.save(user);
-        Iterable<User> users = userRepo.findAll();
+        Iterable<UserEntity> users = userRepo.findAll();
         model.put("users", users);
 
         return "main";
