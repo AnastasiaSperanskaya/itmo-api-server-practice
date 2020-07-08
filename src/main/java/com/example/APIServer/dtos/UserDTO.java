@@ -18,4 +18,23 @@ public class UserDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String email;
+
+    public UserDTO(String username, String email) {
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setId(Object id) {
+        this.id = (Long) id;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
 }

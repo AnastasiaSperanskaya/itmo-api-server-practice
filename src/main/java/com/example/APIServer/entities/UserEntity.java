@@ -40,4 +40,16 @@ public class UserEntity {
         this.statusEntity = statusEntity;
         lastStatusChangedTime = new Date().getTime();
     }
+
+    public Object getId() {
+        return this.id;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
 }

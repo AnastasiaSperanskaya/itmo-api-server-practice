@@ -9,12 +9,12 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StatusDataInitializerComponent implements ApplicationRunner {
+public class StatusInitializer implements ApplicationRunner {
 
     private final StatusRepository statusRepository;
 
     @Autowired
-    public StatusDataInitializerComponent(StatusRepository statusRepository) {
+    public StatusInitializer(StatusRepository statusRepository) {
         this.statusRepository = statusRepository;
     }
 

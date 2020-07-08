@@ -17,4 +17,22 @@ public class UserModel {
         this.username = username;
         this.email = email;
     }
+
+
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setId(Object id) {
+        this.id = (Long) id;
+    }
+
+    public Object getId() {
+        return this.id;
+    }
 }

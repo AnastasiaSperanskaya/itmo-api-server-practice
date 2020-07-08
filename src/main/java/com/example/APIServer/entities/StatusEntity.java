@@ -23,4 +23,10 @@ public class StatusEntity {
     @Column(length = 50)
     @NonNull
     private Status status;
+
+    public StatusEntity() { }
+
+    public StatusEntity(Status status) {
+        this.status = status;
+    }
 }
