@@ -2,54 +2,29 @@ package com.example.APIServer.entities;
 
 import lombok.*;
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import java.util.Date;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "profiles", schema = "project")
 @Data
 @NoArgsConstructor
-@Table(name = "users")
-@Entity
 public class UserEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "status_id", referencedColumnName = "id")
-    @NonNull
-    private StatusEntity statusEntity;
-
-    @Column(length = 50)
-    @NonNull
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", schema = "project", sequenceName = "user_id_sequence", allocationSize = 1)
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private int userId;
     private String username;
-
-    @Email
     private String email;
 
-    @Column(name = "last_status_changed_time")
-    private Long lastStatusChangedTime;
+    @ManyToOne
+    @JoinColumn(name = "status_id_fk", referencedColumnName = "status_id")
+    private StatusEntity status;
 
-    public UserEntity(StatusEntity statusEntity, String username, @Email String email) {
-        this.statusEntity = statusEntity;
+    public UserEntity(StatusEntity status, String username, String email) {
         this.username = username;
         this.email = email;
-    }
-
-    public void setStatusEntity(StatusEntity statusEntity) {
-        this.statusEntity = statusEntity;
-        lastStatusChangedTime = new Date().getTime();
-    }
-
-    public Object getId() {
-        return this.id;
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getEmail() {
-        return this.email;
+        this.status = status;
     }
 }

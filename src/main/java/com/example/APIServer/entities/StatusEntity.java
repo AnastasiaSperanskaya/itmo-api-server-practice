@@ -1,32 +1,28 @@
 package com.example.APIServer.entities;
 
-import com.example.APIServer.Status;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
-@Data
-@NoArgsConstructor
-@RequiredArgsConstructor
-@Table(name = "statuses")
 @Entity
+@Table(name = "statuses", schema = "project")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class StatusEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "status_seq")
+    @SequenceGenerator(name = "status_seq", schema = "project", sequenceName = "status_id_sequence", allocationSize = 1)
+    @Column(name = "status_id", updatable = false)
+    private int statusId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    @NonNull
-    private Status status;
+    private String statusValue;
 
-    public StatusEntity() { }
-
-    public StatusEntity(Status status) {
-        this.status = status;
+    public StatusEntity(String statusValue) {
+        this.statusValue = statusValue;
     }
 }
+

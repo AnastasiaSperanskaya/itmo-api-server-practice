@@ -1,7 +1,6 @@
 package com.example.APIServer.initializers;
 
 import com.example.APIServer.entities.StatusEntity;
-import com.example.APIServer.Status;
 import com.example.APIServer.repositories.StatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;

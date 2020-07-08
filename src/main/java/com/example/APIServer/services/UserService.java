@@ -2,7 +2,6 @@ package com.example.APIServer.services;
 
 import com.example.APIServer.entities.StatusEntity;
 import com.example.APIServer.entities.UserEntity;
-import com.example.APIServer.Status;
 import com.example.APIServer.models.UserModel;
 import com.example.APIServer.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
