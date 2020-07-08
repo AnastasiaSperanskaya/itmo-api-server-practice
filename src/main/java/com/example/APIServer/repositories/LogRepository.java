@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface LogRepository extends JpaRepository<LogEntity, Integer> {
     @Query("select log from LogEntity log where log.changedTime>=:time and log.status.statusValue=:status")
-    List<LogEntity> findAllByChangedTimeAfterAndStatus(@Param("time") long time, @Param("status") String statusValue);
+    List<LogEntity> findAllByTimeAndStatus(@Param("time") long time, @Param("status") String statusValue);
 }

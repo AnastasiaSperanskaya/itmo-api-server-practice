@@ -24,23 +24,24 @@ public class UserService implements ITemplateService<UserModel, Integer> {
 
 
     @Override
-    public List<UserModel> getAll() {
-        List<UserModel> pms = new ArrayList<>();
-        List<UserEntity> ps = userRepository.findAll();
-        for (UserEntity p :
-                ps) {
-            UserModel pm = new UserModel(p.getUserId(), p.getUsername(), p.getEmail(), p.getStatus().getStatusValue());
-            pms.add(pm);
+    public List<UserModel> getAll()
+    {
+        List<UserModel> userModels = new ArrayList<>();
+        List<UserEntity> users = userRepository.findAll();
+
+        for (UserEntity user : users)
+        {
+            UserModel userModel = new UserModel(user.getUserId(), user.getUsername(), user.getEmail(), user.getStatus().getStatusValue());
+            userModels.add(userModel);
         }
-        return pms;
+        return userModels;
     }
 
     @Override
-    public UserModel findById(Integer integer) throws NotFoundException {
-        UserEntity profile = userRepository.findById(integer)
-                .orElseThrow(() ->
-                        new NotFoundException("User with id " + integer + " not found")
-                );
+    public UserModel findById(Integer integer) throws NotFoundException
+    {
+        UserEntity profile = userRepository.findById(integer).orElseThrow(() -> new NotFoundException("User with id " + integer + " not found"));
+
         return new UserModel(
                 profile.getUserId(),
                 profile.getUsername(),
@@ -49,53 +50,45 @@ public class UserService implements ITemplateService<UserModel, Integer> {
     }
 
     @Override
-    public Integer create(UserModel userModel) {
-        return this.userRepository.save(this.convertFromModelToEntity(userModel))
-                .getUserId();
+    public Integer create(UserModel userModel)
+    {
+        return this.userRepository.save(this.modelToEntity(userModel)).getUserId();
     }
 
 
-    public Map<String, Object> changedStatus(int profileId, String statusValue) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        UserEntity user = this.userRepository.findById(profileId)
-                .orElseThrow(() ->
-                        new NotFoundException("User " + profileId + " is not exists")
-                );
-        StatusEntity oldStatus = user.getStatus();
-        map.put("profileId", user.getUserId());
-        map.put("old status", oldStatus);
-        if (!oldStatus.getStatusValue().equals(statusValue.toLowerCase())) {
-            logService.create(new LogModel(profileId, statusValue));
-        }
+    public Map<String, Object> changedStatus(int userId, String statusValue)
+    {
 
-        this.userRepository.setStatusById(statusRepository.findFirstByStatusValue(statusValue)
-                        .orElseGet(() -> {
-                            return statusRepository.save(new StatusEntity(statusValue.toLowerCase()));
-                        })
-                , profileId);
-        map.put("new status", statusRepository.findFirstByStatusValue(statusValue).get());
+        Map<String, Object> map = new HashMap<String, Object>();
+        UserEntity user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " is not exists"));
+        StatusEntity oldStatus = user.getStatus();
+        map.put("user ID", user.getUserId());
+        map.put("old status", oldStatus);
+
+        if (!oldStatus.getStatusValue().equals(statusValue.toLowerCase()))
+            logService.create(new LogModel(userId, statusValue));
+
+        this.userRepository.setStatusById(statusRepository.findByStatus(statusValue).orElseGet(() -> statusRepository.save(new StatusEntity(statusValue.toLowerCase()))), userId);
+
+        map.put("new status", statusRepository.findByStatus(statusValue).get());
         return map;
     }
 
 
-    public UserEntity convertFromModelToEntity(UserModel profileModel) {
-        StatusEntity stat;
+    public UserEntity modelToEntity(UserModel userModel) {
+        StatusEntity status;
         try {
-            stat = statusRepository.findFirstByStatusValue(profileModel.getStatus().toLowerCase())
-                    .orElseGet(() -> {
-                        return statusRepository.save(new StatusEntity(profileModel.getStatus().toLowerCase()));
-                    });
+            status = statusRepository.findByStatus(userModel.getStatus().toLowerCase()).orElseGet(() -> {
+                        return statusRepository.save(new StatusEntity(userModel.getStatus().toLowerCase())); });
         } catch (NullPointerException e) {
-            stat =statusRepository.findFirstByStatusValue(null)
-                    .orElseGet(() -> {
-                        return statusRepository.save(new StatusEntity(null));
-                    });
+            status =statusRepository.findByStatus(null).orElseGet(() -> {
+                        return statusRepository.save(new StatusEntity(null)); });
         }
+
         return new UserEntity(
-                stat,
-                profileModel.getUsername().toLowerCase(),
-                profileModel.getEmail().toLowerCase()
-        );
+                status,
+                userModel.getUsername().toLowerCase(),
+                userModel.getEmail().toLowerCase());
     }
 
 
