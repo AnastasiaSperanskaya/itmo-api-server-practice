@@ -1,38 +1,21 @@
 package com.example.APIServer.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
 
+@AllArgsConstructor
 @Data
 public class UserModel {
+    private int id;
+    private String username;
+    private String email;
+    private String status;
 
-    private Long id;
+    public UserModel() {}
 
-    @NonNull
-    private final String username;
-
-    private final String email;
-
-    public UserModel(@NonNull String username, String email) {
+    public UserModel(String username, String email, String status) {
         this.username = username;
         this.email = email;
-    }
-
-
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public void setId(Object id) {
-        this.id = (Long) id;
-    }
-
-    public Object getId() {
-        return this.id;
+        this.status = status;
     }
 }
