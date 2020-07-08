@@ -68,9 +68,9 @@ public class UserService implements ITemplateService<UserModel, Integer> {
         if (!oldStatus.getStatusValue().equals(statusValue.toLowerCase()))
             logService.create(new LogModel(userId, statusValue));
 
-        this.userRepository.setStatusById(statusRepository.findByStatus(statusValue).orElseGet(() -> statusRepository.save(new StatusEntity(statusValue.toLowerCase()))), userId);
+        this.userRepository.setStatusById(statusRepository.findByStatusValue(statusValue).orElseGet(() -> statusRepository.save(new StatusEntity(statusValue.toLowerCase()))), userId);
 
-        map.put("new status", statusRepository.findByStatus(statusValue).get());
+        map.put("new status", statusRepository.findByStatusValue(statusValue).get());
         return map;
     }
 
@@ -78,10 +78,10 @@ public class UserService implements ITemplateService<UserModel, Integer> {
     public UserEntity modelToEntity(UserModel userModel) {
         StatusEntity status;
         try {
-            status = statusRepository.findByStatus(userModel.getStatus().toLowerCase()).orElseGet(() -> {
+            status = statusRepository.findByStatusValue(userModel.getStatus().toLowerCase()).orElseGet(() -> {
                         return statusRepository.save(new StatusEntity(userModel.getStatus().toLowerCase())); });
         } catch (NullPointerException e) {
-            status =statusRepository.findByStatus(null).orElseGet(() -> {
+            status =statusRepository.findByStatusValue(null).orElseGet(() -> {
                         return statusRepository.save(new StatusEntity(null)); });
         }
 

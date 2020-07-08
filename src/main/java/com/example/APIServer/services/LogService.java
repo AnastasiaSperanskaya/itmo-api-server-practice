@@ -57,7 +57,7 @@ public class LogService implements ITemplateService<LogModel, Integer> {
     public Integer create(LogModel logModel)
     {
         UserEntity user = userRepository.findById(logModel.getUserId()).orElseThrow(() -> new NotFoundException("User with id " + logModel.getUserId() + " is not exists"));
-        LogEntity log = new LogEntity(user, statusRepository.findByStatus(logModel.getNewStatus().toLowerCase()).orElseGet(() -> {
+        LogEntity log = new LogEntity(user, statusRepository.findByStatusValue(logModel.getNewStatus().toLowerCase()).orElseGet(() -> {
                     return statusRepository.save(new StatusEntity(logModel.getNewStatus()));
                 }), System.currentTimeMillis());
 
@@ -68,7 +68,7 @@ public class LogService implements ITemplateService<LogModel, Integer> {
     public List<LogModel> getAllByStatusAndTimestamp(long time, String statusValue)
     {
         List<LogModel> logModelList = new ArrayList<>();
-        List<LogEntity> logList = logRepository.findAllByTimeAndStatus(time, statusValue);
+        List<LogEntity> logList = logRepository.findAllByChangedTimeAfterAndStatus_StatusValue(time, statusValue);
 
         for (LogEntity log : logList)
         {
