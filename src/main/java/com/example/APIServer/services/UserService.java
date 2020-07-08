@@ -1,55 +1,102 @@
 package com.example.APIServer.services;
 
+import com.example.APIServer.NotFoundException;
 import com.example.APIServer.entities.StatusEntity;
 import com.example.APIServer.entities.UserEntity;
 import com.example.APIServer.models.UserModel;
+import com.example.APIServer.repositories.StatusRepository;
 import com.example.APIServer.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.example.APIServer.models.LogModel;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
-public class UserService {
-
+@AllArgsConstructor
+public class UserService implements ITemplateService<UserModel, Integer> {
     private final UserRepository userRepository;
+    private final StatusRepository statusRepository;
+    private final LogService logService;
 
-    private final StatusService statusService;
 
-    @Autowired
-    public UserService(UserRepository userRepository, StatusService statusService) {
-        this.userRepository = userRepository;
-        this.statusService = statusService;
+    @Override
+    public List<UserModel> getAll() {
+        List<UserModel> pms = new ArrayList<>();
+        List<UserEntity> ps = userRepository.findAll();
+        for (UserEntity p :
+                ps) {
+            UserModel pm = new UserModel(p.getUserId(), p.getUsername(), p.getEmail(), p.getStatus().getStatusValue());
+            pms.add(pm);
+        }
+        return pms;
     }
 
-    public UserModel addUser(UserModel userModel) {
-        StatusEntity offlineStatusEntity = statusService.getStatusEntityByStatus(Status.OFFLINE);
-
-        UserEntity userEntity = new UserEntity(
-                offlineStatusEntity,
-                userModel.getUsername(),
-                userModel.getEmail()
-        );
-
-        userEntity = userRepository.save(userEntity);
-        userModel.setId(userEntity.getId());
-
-        return userModel;
+    @Override
+    public UserModel findById(Integer integer) throws NotFoundException {
+        UserEntity profile = userRepository.findById(integer)
+                .orElseThrow(() ->
+                        new NotFoundException("User with id " + integer + " not found")
+                );
+        return new UserModel(
+                profile.getUserId(),
+                profile.getUsername(),
+                profile.getEmail().toLowerCase(),
+                profile.getStatus().getStatusValue().toLowerCase());
     }
 
-    public UserModel getUser(Long id) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(id);
-        UserEntity userEntity = userEntityOptional.orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + id + " was not found")
-        );
-
-        UserModel userModel = new UserModel(
-                userEntity.getUsername(),
-                userEntity.getEmail()
-        );
-
-        return userModel;
+    @Override
+    public Integer create(UserModel userModel) {
+        return this.userRepository.save(this.convertFromModelToEntity(userModel))
+                .getUserId();
     }
+
+
+    public Map<String, Object> changedStatus(int profileId, String statusValue) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        UserEntity user = this.userRepository.findById(profileId)
+                .orElseThrow(() ->
+                        new NotFoundException("User " + profileId + " is not exists")
+                );
+        StatusEntity oldStatus = user.getStatus();
+        map.put("profileId", user.getUserId());
+        map.put("old status", oldStatus);
+        if (!oldStatus.getStatusValue().equals(statusValue.toLowerCase())) {
+            logService.create(new LogModel(profileId, statusValue));
+        }
+
+        this.userRepository.setStatusById(statusRepository.findFirstByStatusValue(statusValue)
+                        .orElseGet(() -> {
+                            return statusRepository.save(new StatusEntity(statusValue.toLowerCase()));
+                        })
+                , profileId);
+        map.put("new status", statusRepository.findFirstByStatusValue(statusValue).get());
+        return map;
+    }
+
+
+    public UserEntity convertFromModelToEntity(UserModel profileModel) {
+        StatusEntity stat;
+        try {
+            stat = statusRepository.findFirstByStatusValue(profileModel.getStatus().toLowerCase())
+                    .orElseGet(() -> {
+                        return statusRepository.save(new StatusEntity(profileModel.getStatus().toLowerCase()));
+                    });
+        } catch (NullPointerException e) {
+            stat =statusRepository.findFirstByStatusValue(null)
+                    .orElseGet(() -> {
+                        return statusRepository.save(new StatusEntity(null));
+                    });
+        }
+        return new UserEntity(
+                stat,
+                profileModel.getUsername().toLowerCase(),
+                profileModel.getEmail().toLowerCase()
+        );
+    }
+
+
 }
