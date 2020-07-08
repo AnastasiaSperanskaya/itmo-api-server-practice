@@ -1,32 +1,43 @@
 package com.example.APIServer.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.*;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import java.util.Date;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Data
+@NoArgsConstructor
+@Table(name = "users")
+@Entity
 public class UserEntity {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
-    private String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    @NonNull
+    private StatusEntity statusEntity;
+
+    @Column(length = 50)
+    @NonNull
+    private String username;
+
+    @Email
     private String email;
 
-    public UserEntity(){ }
+    @Column(name = "last_status_changed_time")
+    private Long lastStatusChangedTime;
 
-    public UserEntity(String name, String email) {
-        this.name = name;
+    public UserEntity(StatusEntity statusEntity, String username, @Email String email) {
+        this.statusEntity = statusEntity;
+        this.username = username;
         this.email = email;
     }
 
-    public void setName(String name) { this.name = name; }
-    public String getName() { return name; }
-
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setStatusEntity(StatusEntity statusEntity) {
+        this.statusEntity = statusEntity;
+        lastStatusChangedTime = new Date().getTime();
+    }
 }
