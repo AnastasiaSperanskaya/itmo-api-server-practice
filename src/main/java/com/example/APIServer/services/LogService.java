@@ -68,7 +68,7 @@ public class LogService implements ITemplateService<LogModel, Integer> {
     public List<LogModel> getAllByStatusAndTimestamp(long time, String statusValue)
     {
         List<LogModel> logModelList = new ArrayList<>();
-        List<LogEntity> logList = logRepository.findAllByChangedTimeAfterAndStatus_StatusValue(time, statusValue);
+        List<LogEntity> logList = logRepository.findAllByChangedTimeAndStatus_StatusValue(time, statusValue);
 
         for (LogEntity log : logList)
         {

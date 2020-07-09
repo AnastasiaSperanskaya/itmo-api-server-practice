@@ -27,4 +27,11 @@ public class UserEntity {
         this.email = email;
         this.status = status;
     }
+
+    public UserEntity(int userId, String username, String email, StatusEntity statusEntity) {
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.status = statusEntity;
+    }
 }

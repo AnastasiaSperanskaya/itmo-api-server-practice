@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface LogRepository extends JpaRepository<LogEntity, Integer> {
-    List<LogEntity> findAllByChangedTimeAfterAndStatus_StatusValue(long time, String status);
+    List<LogEntity> findAllByChangedTimeAndStatus_StatusValue(long time, String status);
 }

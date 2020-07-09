@@ -3,7 +3,6 @@ package com.example.APIServer.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
 @Entity
@@ -27,7 +26,6 @@ public class LogEntity {
     private StatusEntity status;
 
     private long changedTime;
-
 
     public LogEntity(UserEntity user, StatusEntity status, long changedTime) {
         this.user = user;
