@@ -44,9 +44,9 @@ public class Tests
 
         Mockito.when(logRepository.findById(ID)).thenReturn(Optional.of(log));
 
-        final LogModel res = logService.findById(ID);
+        final LogModel logModel = logService.findById(ID);
 
-        Assertions.assertEquals(res, new LogModel(ID, 2, time, ""));
+        Assertions.assertEquals(logModel, new LogModel(ID, 2, time, ""));
 
         Mockito.verify(logRepository).findById(ID);
         Mockito.verifyNoMoreInteractions(logRepository);
@@ -60,8 +60,8 @@ public class Tests
 
         Mockito.when(userRepository.findById(ID)).thenReturn(Optional.of(user));
 
-        UserModel res = userService.findById(ID);
-        Assertions.assertEquals(res, new UserModel(ID, "", "", ""));
+        UserModel userModel = userService.findById(ID);
+        Assertions.assertEquals(userModel, new UserModel(ID, "", "", ""));
 
         Mockito.verify(userRepository).findById(ID);
         Mockito.verifyNoMoreInteractions(userRepository);

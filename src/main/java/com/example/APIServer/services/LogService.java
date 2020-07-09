@@ -42,9 +42,9 @@ public class LogService implements ITemplateService<LogModel, Integer> {
     }
 
     @Override
-    public LogModel findById(Integer integer)
+    public LogModel findById(Integer ID)
     {
-        LogEntity log = logRepository.findById(integer).orElseThrow(() -> new NotFoundException("Log with ID " + integer + " is not exists"));
+        LogEntity log = logRepository.findById(ID).orElseThrow(() -> new NotFoundException("Log with ID " + ID + " is not exists"));
         return new LogModel(
                 log.getLogId(),
                 log.getUser().getUserId(),
@@ -57,18 +57,18 @@ public class LogService implements ITemplateService<LogModel, Integer> {
     public Integer create(LogModel logModel)
     {
         UserEntity user = userRepository.findById(logModel.getUserId()).orElseThrow(() -> new NotFoundException("User with id " + logModel.getUserId() + " is not exists"));
-        LogEntity log = new LogEntity(user, statusRepository.findByStatusValue(logModel.getNewStatus().toLowerCase()).orElseGet(() -> {
-                    return statusRepository.save(new StatusEntity(logModel.getNewStatus()));
+        LogEntity log = new LogEntity(user, statusRepository.findByStatusValue(logModel.getChangedStatus().toLowerCase()).orElseGet(() -> {
+                    return statusRepository.save(new StatusEntity(logModel.getChangedStatus()));
                 }), System.currentTimeMillis());
 
         logRepository.save(log);
         return log.getLogId();
     }
 
-    public List<LogModel> getAllByStatusAndTimestamp(long time, String statusValue)
+    public List<LogModel> getAllByStatusAndTimestamp(long timestamp, String statusValue)
     {
         List<LogModel> logModelList = new ArrayList<>();
-        List<LogEntity> logList = logRepository.findAllByChangedTimeAndStatus_StatusValue(time, statusValue);
+        List<LogEntity> logList = logRepository.findAllByChangedTimeAndStatus_StatusValue(timestamp, statusValue);
 
         for (LogEntity log : logList)
         {

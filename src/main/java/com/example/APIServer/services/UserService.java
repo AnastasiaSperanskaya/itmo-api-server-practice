@@ -38,9 +38,9 @@ public class UserService implements ITemplateService<UserModel, Integer> {
     }
 
     @Override
-    public UserModel findById(Integer integer) throws NotFoundException
+    public UserModel findById(Integer ID) throws NotFoundException
     {
-        UserEntity profile = userRepository.findById(integer).orElseThrow(() -> new NotFoundException("User with id " + integer + " not found"));
+        UserEntity profile = userRepository.findById(ID).orElseThrow(() -> new NotFoundException("User with id " + ID + " not found"));
 
         return new UserModel(
                 profile.getUserId(),
@@ -74,7 +74,6 @@ public class UserService implements ITemplateService<UserModel, Integer> {
         return map;
     }
 
-
     public UserEntity modelToEntity(UserModel userModel) {
         StatusEntity status;
         try {
@@ -85,11 +84,6 @@ public class UserService implements ITemplateService<UserModel, Integer> {
                         return statusRepository.save(new StatusEntity(null)); });
         }
 
-        return new UserEntity(
-                status,
-                userModel.getUsername().toLowerCase(),
-                userModel.getEmail().toLowerCase());
+        return new UserEntity(status, userModel.getUsername().toLowerCase(), userModel.getEmail().toLowerCase());
     }
-
-
 }

@@ -9,19 +9,19 @@ public class LogModel {
     private int id;
     private int userId;
     private long changedTime;
-    private String newStatus;
+    private String changedStatus;
 
     public LogModel() {}
 
-    public LogModel(int userId, String newStatus) {
+    public LogModel(int userId, String changedStatus) {
         this.userId = userId;
-        this.newStatus = newStatus;
+        this.changedStatus = changedStatus;
     }
 
-    public LogModel(int userId, long changedTime, String newStatus) {
+    public LogModel(int userId, long changedTime, String changedStatus) {
         this.userId = userId;
         this.changedTime = changedTime;
-        this.newStatus = newStatus;
+        this.changedStatus = changedStatus;
     }
 
 }
